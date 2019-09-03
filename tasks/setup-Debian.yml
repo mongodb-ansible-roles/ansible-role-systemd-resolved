@@ -1,0 +1,24 @@
+---
+- name: Find resolved config file
+  stat:
+    path: /etc/systemd/resolved.conf
+  register: resolved
+
+- name: Disable listener
+  lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: 'DNSStubListener'
+    line: DNSStubListener=no
+  when: resolved.stat.exists == true
+
+- name: Check if systemd is installed
+  shell: command -v systemctl >/dev/null 2>&1
+  register: is_systemctl_exist
+  ignore_errors: yes
+
+- name: Stop and disable systemd service
+  systemd:
+    state: stopped
+    name: systemd-resolved
+    enabled: false
+  when: is_systemctl_exist.rc == 0
