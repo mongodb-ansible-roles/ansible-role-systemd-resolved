@@ -14,7 +14,8 @@
 - name: Check if systemd is installed
   shell: command -v systemctl >/dev/null 2>&1
   register: is_systemctl_exist
-  ignore_errors: yes
+  ignore_errors: true
+  changed_when: false
 
 - name: Stop and disable systemd service
   systemd:
